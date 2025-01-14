@@ -30,12 +30,14 @@ type TMovie = {
   Actors: string;
   Director: string;
   Genre: string;
+  Country?: string;
+  BoxOffice?: string;
 };
 
 type TMovieDetailProps = {
   selectedId: string;
   onCloseMovie: () => void;
-  onAddWatched: () => void;
+  onAddWatched: (movie: any) => void;
   watched: any[];
 };
 
@@ -48,7 +50,6 @@ export const MovieDetails = ({
   const [movie, setMovie] = useState<TMovie>(DEFAULT_MOVIE);
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState(0);
-  const [avgRating, setAvgRating] = useState(0);
 
   const countRef = useRef(0);
 
@@ -56,13 +57,6 @@ export const MovieDetails = ({
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
   )?.userRating;
-
-  /* useEffect(
-    function () {
-      if (userRating) countRef.current++;
-    },
-    [userRating]
-  ); */
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -99,24 +93,11 @@ export const MovieDetails = ({
     Plot: plot,
     Released: released,
     Actors: actors,
+    Country: country,
     Director: director,
     Genre: genre,
+    BoxOffice: boxOffice,
   }: TMovie = movie;
-
-  // if (imdbRating > 8) return <p>Greatest ever!</p>;
-  // if (imdbRating > 8) [isTop, setIsTop] = useState(true);
-
-  // const [isTop, setIsTop] = useState(imdbRating > 8);
-  // console.log(isTop);
-  // useEffect(
-  //   function () {
-  //     setIsTop(imdbRating > 8);
-  //   },
-  //   [imdbRating]
-  // );
-
-  const isTop = imdbRating > 8;
-  //console.log(isTop);
 
   function handleAdd() {
     const newWatchedMovie = {
@@ -132,28 +113,17 @@ export const MovieDetails = ({
 
     onAddWatched(newWatchedMovie);
     onCloseMovie();
-
-    // setAvgRating(Number(imdbRating));
-    // setAvgRating((avgRating) => (avgRating + userRating) / 2);
   }
 
-  /*   useEffect(
-    function () {
-      function callback(e) {
-        if (e.code === 'Escape') {
-          onCloseMovie();
-        }
-      }
+  useEffect(() => {
+    const callback = (e: any) => {
+      if (e.code === 'Escape') onCloseMovie();
+    };
 
-      document.addEventListener('keydown', callback);
+    document.addEventListener('keydown', callback);
 
-      return function () {
-        document.removeEventListener('keydown', callback);
-      };
-    },
-    [onCloseMovie]
-  );
- */
+    return () => document.removeEventListener('keydown', callback);
+  }, [onCloseMovie]);
 
   useEffect(() => {
     if (!title) return;
@@ -194,9 +164,7 @@ export const MovieDetails = ({
             </div>
           </header>
 
-          {/* <p>{avgRating}</p> */}
-
-          <section className='p-8 flex flex-col gap-6'>
+          <section className='p-8 flex flex-col gap-6 leading-6'>
             <div className='bg-100 cursor-pointer transition-all rounded-sm p-8 mb-3 font-bold flex flex-col gap-8'>
               {!isWatched ? (
                 <>
@@ -214,15 +182,17 @@ export const MovieDetails = ({
                   )}
                 </>
               ) : (
-                <p>
+                <p className='text-center'>
                   You rated with movie {watchedUserRating} <span>⭐️</span>
                 </p>
               )}
             </div>
-            <p className='leading-6'>
+            <p>
               <em>{plot}</em>
             </p>
             <p>Starring {actors}</p>
+            <p>Country {country}</p>
+            <p>Box Office {boxOffice}</p>
             <p>Directed by {director}</p>
           </section>
         </>

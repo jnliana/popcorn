@@ -1,14 +1,14 @@
 export const WatchedMovie = ({ movie, onDeleteWatched }: any) => {
-  console.log('movi', movie);
+  const runTime = !isNaN(movie.runtime) ? movie.runtime : 0;
   return (
     <li className='relative grid grid-cols-[4rem_1fr] grid-rows-[auto_auto] gap-x-6 text-lg items-center py-6 px-14 border-b-2 border-100 cursor-pointer transition-all duration-75 '>
       <img
         className='w-full h-full object-cover'
-        src={movie.Poster}
+        src={movie.poster}
         alt={`${movie.title} poster`}
       />
       <div className='flex flex-col justify-center h-full '>
-        <h3 className='text-2xl'>{movie.Title}</h3>
+        <h3 className='text-2xl'>{movie.title}</h3>
         <div className='flex items-center gap-8'>
           <p className='flex items-center gap-3'>
             <span>⭐️</span>
@@ -20,7 +20,7 @@ export const WatchedMovie = ({ movie, onDeleteWatched }: any) => {
           </p>
           <p className='flex items-center gap-3'>
             <span>⏳</span>
-            <span>{movie.runtime} min</span>
+            <span>{runTime} min</span>
           </p>
 
           <button

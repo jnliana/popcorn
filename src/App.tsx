@@ -9,33 +9,10 @@ import { MovieDetails } from './components/MovieDetails/MovieDetails';
 import { WatchedSummary } from './components/WatchedSummary/WatchedSummary';
 import { WatchedMoviesList } from './components/WatchedMoviesList/WatchedMoviesList';
 
-const tempWatchedData = [
-  {
-    imdbID: 'tt1375666',
-    Title: 'Inception',
-    Year: '2010',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
-    runtime: 148,
-    imdbRating: 8.8,
-    userRating: 10,
-  },
-  {
-    imdbID: 'tt0088763',
-    Title: 'Back to the Future',
-    Year: '1985',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-    runtime: 116,
-    imdbRating: 8.5,
-    userRating: 9,
-  },
-];
-
 function App() {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
-  const [watchedMovies, setWatchedMovies] = useState(tempWatchedData);
+  const [watchedMovies, setWatchedMovies] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedId, setSelectedId] = useState<string>(null);
@@ -47,9 +24,23 @@ function App() {
     setSelectedId('');
   };
   const handleAddWatched = (e: any) => {
-    console.log('movie', e);
+    const movie = {
+      imdbID: e.imdbID,
+      title: e.title,
+      poster: e.poster,
+      imdbRating: e.imdbRating,
+      runtime: e.runtime,
+      userRating: e.userRating,
+    };
+    const data = [...watchedMovies, movie];
+    setWatchedMovies(data);
+    localStorage.setItem('watchedMovies', JSON.stringify(data));
   };
-  const handleDeleteWatched = () => {};
+  const handleDeleteWatched = (e: any) => {
+    const data = watchedMovies.filter((movie: any) => movie.imdbID !== e);
+    setWatchedMovies(data);
+    localStorage.setItem('watchedMovies', JSON.stringify(data));
+  };
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -89,8 +80,15 @@ function App() {
     };
   }, [query]);
 
+  useEffect(() => {
+    const savedMovies = localStorage.getItem('watchedMovies');
+    if (savedMovies) {
+      setWatchedMovies(JSON.parse(savedMovies));
+    }
+  }, []);
+
   return (
-    <div className='text-white bg-900 h-full min-h-screen p-8'>
+    <div className='text-white bg-900 h-screen p-8 flex flex-col'>
       <NavBar>
         <Search
           query={query}
@@ -99,8 +97,8 @@ function App() {
         <CounterResults movies={movies} />
       </NavBar>
 
-      <main className='container mx-auto pt-5 max-h-screen overflow-hidden'>
-        <div className='grid grid-cols-2 gap-4'>
+      <main className='container mx-auto pt-5 flex-1 overflow-hidden'>
+        <div className='grid grid-cols-2 gap-4 h-full'>
           <div className='bg-500 rounded-sm relative'>
             {isLoading && <Loader />}
             {!isLoading && !error && (

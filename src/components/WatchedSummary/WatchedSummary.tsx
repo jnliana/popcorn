@@ -4,7 +4,12 @@ const average = (arr: any) =>
 export const WatchedSummary = ({ watched }: any) => {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
+  const avgRuntime = average(
+    watched.map((movie) => {
+      const runTime = !isNaN(movie.runtime) ? movie.runtime : 0;
+      return runTime;
+    })
+  );
 
   return (
     <div className='p-8 rounded-sm bg-100 shadow-md '>
