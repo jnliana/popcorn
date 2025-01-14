@@ -1,10 +1,15 @@
 import { useEffect, useRef } from 'react';
 
-export const Search = ({ query, setQuery }: any) => {
-  const inputEl = useRef(null);
+type TSearch = {
+  query: string;
+  setQuery: (query: string) => void;
+};
+
+export const Search = ({ query, setQuery }: TSearch) => {
+  const inputEl = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const callback = (e: any) => {
+    const callback = (e: KeyboardEvent) => {
       if (!inputEl?.current) return;
       if (e.code === 'Enter') {
         inputEl.current.focus();

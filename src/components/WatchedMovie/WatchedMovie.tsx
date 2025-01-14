@@ -1,4 +1,14 @@
-export const WatchedMovie = ({ movie, onDeleteWatched }: any) => {
+import { TMovieStore } from '../MovieDetails/MovieDetails';
+
+type TWatchedMovieProps = {
+  movie: TMovieStore;
+  onDeleteWatched: (id: string) => void;
+};
+
+export const WatchedMovie = ({
+  movie,
+  onDeleteWatched,
+}: TWatchedMovieProps) => {
   const runTime = !isNaN(movie.runtime) ? movie.runtime : 0;
   return (
     <li className='relative grid grid-cols-[4rem_1fr] grid-rows-[auto_auto] gap-x-6 text-lg items-center py-6 px-14 border-b-2 border-100 cursor-pointer transition-all duration-75 '>

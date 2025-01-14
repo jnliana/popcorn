@@ -1,28 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader } from '../Loader/Loader';
 import { StarRating } from '../StarRating/StarRating';
 
-const DEFAULT_MOVIE = {
-  imdbID: '',
-  Title: '',
-  Year: '',
-  Poster: '',
-  Runtime: 0,
-  imdbRating: 0,
-  userRating: 0,
-  Plot: '',
-  Released: '',
-  Actors: '',
-  Director: '',
-  Genre: '',
+export type TMovieStore = {
+  imdbID: string;
+  title: string;
+  poster: string;
+  imdbRating: number;
+  runtime: number;
+  userRating: number;
 };
 
-type TMovie = {
+type TMovieApi = {
   imdbID: string;
   Title: string;
   Year: string;
   Poster: string;
-  Runtime: number;
+  Runtime: string;
   imdbRating: number;
   userRating: number;
   Plot: string;
@@ -34,11 +28,26 @@ type TMovie = {
   BoxOffice?: string;
 };
 
+const DEFAULT_MOVIE: TMovieApi = {
+  imdbID: '',
+  Title: '',
+  Year: '',
+  Poster: '',
+  Runtime: '',
+  imdbRating: 0,
+  userRating: 0,
+  Plot: '',
+  Released: '',
+  Actors: '',
+  Director: '',
+  Genre: '',
+};
+
 type TMovieDetailProps = {
   selectedId: string;
   onCloseMovie: () => void;
-  onAddWatched: (movie: any) => void;
-  watched: any[];
+  onAddWatched: (movie: TMovieStore) => void;
+  watched: TMovieStore[];
 };
 
 export const MovieDetails = ({
@@ -47,11 +56,9 @@ export const MovieDetails = ({
   onAddWatched,
   watched,
 }: TMovieDetailProps) => {
-  const [movie, setMovie] = useState<TMovie>(DEFAULT_MOVIE);
+  const [movie, setMovie] = useState<TMovieApi>(DEFAULT_MOVIE);
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState(0);
-
-  const countRef = useRef(0);
 
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   const watchedUserRating = watched.find(
@@ -86,7 +93,6 @@ export const MovieDetails = ({
 
   const {
     Title: title,
-    Year: year,
     Poster: poster,
     Runtime: runtime,
     imdbRating,
@@ -97,26 +103,24 @@ export const MovieDetails = ({
     Director: director,
     Genre: genre,
     BoxOffice: boxOffice,
-  }: TMovie = movie;
+  }: TMovieApi = movie;
 
-  function handleAdd() {
-    const newWatchedMovie = {
+  const handleAdd = () => {
+    const newWatchedMovie: TMovieStore = {
       imdbID: selectedId,
       title,
-      year,
       poster,
       imdbRating: Number(imdbRating),
-      runtime: Number(runtime.split(' ').at(0)),
+      runtime: Number(runtime.split(' ')[0]),
       userRating,
-      countRatingDecisions: countRef.current,
     };
 
     onAddWatched(newWatchedMovie);
     onCloseMovie();
-  }
+  };
 
   useEffect(() => {
-    const callback = (e: any) => {
+    const callback = (e: KeyboardEvent) => {
       if (e.code === 'Escape') onCloseMovie();
     };
 
@@ -190,10 +194,10 @@ export const MovieDetails = ({
             <p>
               <em>{plot}</em>
             </p>
-            <p>Starring {actors}</p>
-            <p>Country {country}</p>
-            <p>Box Office {boxOffice}</p>
-            <p>Directed by {director}</p>
+            <p>Starring: {actors}</p>
+            <p>Country: {country}</p>
+            <p>Box Office: {boxOffice}</p>
+            <p>Directed by: {director}</p>
           </section>
         </>
       )}

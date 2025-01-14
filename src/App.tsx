@@ -5,17 +5,20 @@ import { CounterResults } from './components/CounterResults/CounterResults';
 import { Loader } from './components/Loader/Loader';
 import { MovieList } from './components/MovieList/MovieList';
 import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
-import { MovieDetails } from './components/MovieDetails/MovieDetails';
+import {
+  MovieDetails,
+  TMovieStore,
+} from './components/MovieDetails/MovieDetails';
 import { WatchedSummary } from './components/WatchedSummary/WatchedSummary';
 import { WatchedMoviesList } from './components/WatchedMoviesList/WatchedMoviesList';
 
 function App() {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
-  const [watchedMovies, setWatchedMovies] = useState<any>([]);
+  const [watchedMovies, setWatchedMovies] = useState<TMovieStore[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [selectedId, setSelectedId] = useState<string>(null);
+  const [selectedId, setSelectedId] = useState<string>('');
 
   const handleSelectMovie = (e: string) => {
     setSelectedId(e);
@@ -23,7 +26,7 @@ function App() {
   const handleCloseMovie = () => {
     setSelectedId('');
   };
-  const handleAddWatched = (e: any) => {
+  const handleAddWatched = (e: TMovieStore) => {
     const movie = {
       imdbID: e.imdbID,
       title: e.title,
@@ -36,8 +39,11 @@ function App() {
     setWatchedMovies(data);
     localStorage.setItem('watchedMovies', JSON.stringify(data));
   };
-  const handleDeleteWatched = (e: any) => {
-    const data = watchedMovies.filter((movie: any) => movie.imdbID !== e);
+
+  const handleDeleteWatched = (e: string) => {
+    const data = watchedMovies.filter(
+      (movie: TMovieStore) => movie.imdbID !== e
+    );
     setWatchedMovies(data);
     localStorage.setItem('watchedMovies', JSON.stringify(data));
   };
