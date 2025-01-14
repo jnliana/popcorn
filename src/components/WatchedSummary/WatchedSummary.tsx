@@ -1,7 +1,12 @@
-const average = (arr: any) =>
-  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
+import { useMovies } from '../../hooks/useMovies';
+import { TMovieStore } from '../MovieDetails/MovieDetails';
 
-export const WatchedSummary = ({ watched }: any) => {
+type TWatchedDataProp = {
+  watched: TMovieStore[];
+};
+
+export const WatchedSummary = ({ watched }: TWatchedDataProp) => {
+  const { average } = useMovies();
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
   const avgRuntime = average(

@@ -11,21 +11,27 @@ import {
 } from './components/MovieDetails/MovieDetails';
 import { WatchedSummary } from './components/WatchedSummary/WatchedSummary';
 import { WatchedMoviesList } from './components/WatchedMoviesList/WatchedMoviesList';
+import { useMovies } from './hooks/useMovies';
+import { useLocalStorage } from './hooks/useLocalStorage';
 
 function App() {
-  const [query, setQuery] = useState('');
-  const [movies, setMovies] = useState([]);
-  const [watchedMovies, setWatchedMovies] = useState<TMovieStore[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [selectedId, setSelectedId] = useState<string>('');
+  const { movies, error, isLoading, query, setQuery } = useMovies();
+  const { set, get } = useLocalStorage();
 
+  //Lazy evaluation - State with callback
+  const [watchedMovies, setWatchedMovies] = useState<TMovieStore[]>(() => {
+    return get('watchedMovies');
+  });
+
+  const [selectedId, setSelectedId] = useState<string>('');
   const handleSelectMovie = (e: string) => {
     setSelectedId(e);
   };
+
   const handleCloseMovie = () => {
     setSelectedId('');
   };
+
   const handleAddWatched = (e: TMovieStore) => {
     const movie = {
       imdbID: e.imdbID,
@@ -37,7 +43,7 @@ function App() {
     };
     const data = [...watchedMovies, movie];
     setWatchedMovies(data);
-    localStorage.setItem('watchedMovies', JSON.stringify(data));
+    set('watchedMovies', data);
   };
 
   const handleDeleteWatched = (e: string) => {
@@ -45,53 +51,11 @@ function App() {
       (movie: TMovieStore) => movie.imdbID !== e
     );
     setWatchedMovies(data);
-    localStorage.setItem('watchedMovies', JSON.stringify(data));
   };
 
   useEffect(() => {
-    const abortController = new AbortController();
-    const fetchMovies = async () => {
-      if (query.length < 3) {
-        setMovies([]);
-        setError('');
-        return;
-      }
-      setError('');
-      setIsLoading(true);
-      try {
-        const request = await fetch(
-          `http://www.omdbapi.com/?apikey=ceb4acd3&s=${query}`,
-          {
-            signal: abortController.signal,
-          }
-        );
-        const response = await request.json();
-        if (response.Response === 'False') {
-          throw new Error(response.Error);
-        }
-
-        setMovies(response.Search);
-      } catch (error) {
-        const typedError = error as Error;
-        if (typedError.name !== 'AbortError') {
-          setError(typedError.message);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchMovies();
-    return () => {
-      abortController.abort();
-    };
-  }, [query]);
-
-  useEffect(() => {
-    const savedMovies = localStorage.getItem('watchedMovies');
-    if (savedMovies) {
-      setWatchedMovies(JSON.parse(savedMovies));
-    }
-  }, []);
+    set('watchedMovies', watchedMovies);
+  }, [watchedMovies, set]);
 
   return (
     <div className='text-white bg-900 h-screen p-8 flex flex-col'>
