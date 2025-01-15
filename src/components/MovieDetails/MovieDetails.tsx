@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Loader } from '../Loader/Loader';
 import { StarRating } from '../StarRating/StarRating';
+import { useKey } from '../../hooks/useKey';
 
 export type TMovieStore = {
   imdbID: string;
@@ -119,6 +120,9 @@ export const MovieDetails = ({
     onCloseMovie();
   };
 
+  useKey({ key: 'Escape', action: onCloseMovie });
+  /*   
+  deprecated code
   useEffect(() => {
     const callback = (e: KeyboardEvent) => {
       if (e.code === 'Escape') onCloseMovie();
@@ -127,7 +131,7 @@ export const MovieDetails = ({
     document.addEventListener('keydown', callback);
 
     return () => document.removeEventListener('keydown', callback);
-  }, [onCloseMovie]);
+  }, [onCloseMovie]); */
 
   useEffect(() => {
     if (!title) return;

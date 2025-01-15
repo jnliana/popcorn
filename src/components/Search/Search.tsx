@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { useKey } from '../../hooks/useKey';
 
 type TSearch = {
   query: string;
@@ -8,6 +9,10 @@ type TSearch = {
 export const Search = ({ query, setQuery }: TSearch) => {
   const inputEl = useRef<HTMLInputElement>(null);
 
+  useKey({ key: 'Enter', action: () => inputEl.current?.focus() });
+
+  /* 
+  deprecated code
   useEffect(() => {
     const callback = (e: KeyboardEvent) => {
       if (!inputEl?.current) return;
@@ -18,6 +23,7 @@ export const Search = ({ query, setQuery }: TSearch) => {
     document.addEventListener('keydown', callback);
     return () => document.removeEventListener('keydown', callback);
   }, []);
+ */
 
   return (
     <input
